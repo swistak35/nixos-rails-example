@@ -1,29 +1,30 @@
+{
+   pkgs       ? import <nixpkgs> {},
+   stdenv     ? pkgs.stdenv,
+   ruby       ? pkgs.ruby_2_1,
+   bundler    ? pkgs.bundler,
+   bundlerEnv ? pkgs.bundlerEnv
+}:
 let
-   pkgs       = import <nixpkgs> {};
-   stdenv     = pkgs.stdenv;
-   ruby       = pkgs.ruby_2_1;
-   bundler    = pkgs.bundler;
-   bundlerEnv = pkgs.bundlerEnv;
    env = pkgs.bundlerEnv {
-      name = "sampleapp2";
-      gemfile = ./Gemfile;
+      name     = "example-rails-app-env";
+      gemfile  = ./Gemfile;
       lockfile = ./Gemfile.lock;
-      gemset = ./gemset.nix;
+      gemset   = ./gemset.nix;
       inherit ruby;
    };
 in 
+   stdenv.mkDerivation rec {
+      name = "example-rails-app";
+      version = "1.1.1.1";
 
-stdenv.mkDerivation rec {
-   name = "example-rails-app";
-   version = "1.1.1.1";
+      buildInputs = [
+         pkgs.ruby_2_1
+         pkgs.postgresql
+         pkgs.bundler
+         pkgs.inetutils # hostname
+         pkgs.bundler
+      ];
 
-   buildInputs = [
-      pkgs.ruby_2_1
-      pkgs.postgresql
-      pkgs.bundler
-      pkgs.inetutils # hostname
-      pkgs.bundler
-   ];
-
-   src = ./.;
-}
+      src = ./.;
+   }
